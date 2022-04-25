@@ -55,12 +55,6 @@ class ExampleInstrumentedTests: BaseTest(true) {
             .endpoint(EndpointType.Events)
             .assertWillReceive { request ->
                 request.body.messages
-                    .map {
-                        when (it) {
-                            is PushRegistrationMessage -> PushRegistrationMessage.serializer()
-                        }
-                        it
-                    }
                     .filterIsInstance<MPEventMessage>()
                     .any { event ->
                         event.name == "Landing Button Click"
@@ -71,8 +65,5 @@ class ExampleInstrumentedTests: BaseTest(true) {
                 MParticle.getInstance()?.upload()
             }
             .blockUntilFinished()
-        Server.requests.forEach {
-            Logger.warning("Request: \n${it.request.body.toString()}")
-        }
     }
 }

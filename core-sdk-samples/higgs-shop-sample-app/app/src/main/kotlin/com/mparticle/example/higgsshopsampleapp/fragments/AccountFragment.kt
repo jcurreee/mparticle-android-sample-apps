@@ -13,11 +13,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.mparticle.MParticle
+import com.mparticle.SdkListener
+import com.mparticle.example.higgsshopsampleapp.HiggsShopSampleApplication
 import com.mparticle.example.higgsshopsampleapp.R
 import com.mparticle.example.higgsshopsampleapp.activities.MainActivity
 import com.mparticle.example.higgsshopsampleapp.databinding.FragmentAccountBinding
 import com.mparticle.example.higgsshopsampleapp.viewmodels.AccountViewModel
 import com.mparticle.identity.IdentityApiRequest
+import com.mparticle.internal.listeners.InternalListenerManager
+import com.mparticle.messages.events.BatchMessage
+import com.mparticle.messages.events.ScreenViewMessage
+import org.json.JSONObject
 
 
 class AccountFragment : Fragment() {
@@ -41,6 +47,20 @@ class AccountFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         MParticle.getInstance()?.logScreen("My Account")
+//        InternalListenerManager.start(context)?.addListener(object: HiggsShopSampleApplication.MParticleRequestListener {
+//            override fun onEventRequestFinished(
+//                type: SdkListener.Endpoint?,
+//                url: String?,
+//                request: BatchMessage,
+//                response: JSONObject?,
+//                responseCode: Int
+//            ) {
+//                request.messages
+//                    .filterIsInstance<ScreenViewMessage>()
+//                    .any { it. }
+//            }
+//
+//        })
 
         accountViewModel.loggedInResponseLiveData.observe(
             viewLifecycleOwner,

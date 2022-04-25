@@ -33,14 +33,10 @@ open class HiggsShopSampleApplication: Application() {
 
         MParticle.start(options)
     }
-        abstract class MParticleRequestListener: InternalListener {
+        abstract class MParticleRequestListener: SdkListener() {
             var lastRequest: JSONObject? = null
-            override fun onNetworkRequestStarted(
-                type: SdkListener.Endpoint?,
-                url: String?,
-                body: JSONObject?,
-                vararg objects: Any?
-            ) {
+
+            override fun onNetworkRequestStarted(type: Endpoint, url: String, body: JSONObject) {
                 if (type == SdkListener.Endpoint.EVENTS) {
                     lastRequest = body
                 }
@@ -61,8 +57,8 @@ open class HiggsShopSampleApplication: Application() {
             }
 
             override fun onNetworkRequestFinished(
-                type: SdkListener.Endpoint?,
-                url: String?,
+                type: Endpoint,
+                url: String,
                 response: JSONObject?,
                 responseCode: Int
             ) {
@@ -84,7 +80,7 @@ open class HiggsShopSampleApplication: Application() {
             abstract fun onEventRequestFinished(
                 type: SdkListener.Endpoint?,
                 url: String?,
-                request: BatchMessage
+                request: BatchMessage,
                 response: JSONObject?,
                 responseCode: Int
             )

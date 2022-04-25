@@ -18,8 +18,8 @@ android {
         versionCode = buildVersionCode()
         versionName = "0.11.0-SNAPSHOT"
         testInstrumentationRunner = "com.mparticle.example.higgsshopsampleapp.CustomTestRunner"
-        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_KEY", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_KEY") ?: "key"}\"")
-        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_SECRET", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_SECRET") ?: "secret"}\"")
+        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_KEY", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_KEY")}\"")
+        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_SECRET", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_SECRET")}\"")
     }
     buildFeatures {
         dataBinding = true

@@ -10,14 +10,21 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.mparticle.MPEvent
 import com.mparticle.MParticle
 import com.mparticle.MParticleOptions
+import com.mparticle.SdkListener
 import com.mparticle.example.higgsshopsampleapp.BuildConfig
+import com.mparticle.example.higgsshopsampleapp.HiggsShopSampleApplication
 import com.mparticle.example.higgsshopsampleapp.R
 import com.mparticle.example.higgsshopsampleapp.utils.Constants
+import com.mparticle.internal.listeners.InternalListenerManager
+import com.mparticle.messages.events.BatchMessage
+import com.mparticle.messages.events.MPEventMessage
+import org.json.JSONObject
 
 class LandingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +43,34 @@ class LandingActivity : AppCompatActivity() {
                     .build()
                 MParticle.getInstance()?.logEvent(event)
                 val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+
+                val manager = InternalListenerManager.start(this)
+                manager?.addListener(object:
+                    HiggsShopSampleApplication.MParticleRequestListener() {
+                    override fun onEventRequestFinished(
+                        type: SdkListener.Endpoint?,
+                        url: String?,
+                        request: BatchMessage,
+                        response: JSONObject?,
+                        responseCode: Int
+                    ) {
+                        request.messages
+                            .filterIsInstance<MPEventMessage>()
+                            .any { it.name == "Landing Button Click" }
+                            .let {
+                                if (it) {
+                                    if (responseCode >= 200 && responseCode < 300) {
+                                        showNetworkResult("Landing Button Click event uploaded!")
+                                    } else {
+                                        showNetworkResult("ERROR: Landing Button Click event failed to upload")
+                                    }
+                                    manager.removeListener(this)
+                                }
+                            }
+                    }
+
+                })
+                //startActivity(intent)
             }
         } else {
             btnCTA.isClickable = false
@@ -87,5 +121,26 @@ class LandingActivity : AppCompatActivity() {
         snackbar.show()
     }
 
+    fun showNetworkResult(message: String) {
+        val parentLayout: View = findViewById(android.R.id.content)
+        val snackbar = Snackbar.make(parentLayout, message, Snackbar.LENGTH_SHORT)
+        val layoutParams = ActionBar.LayoutParams(snackbar.view.layoutParams)
+
+        val tv = (snackbar.view.findViewById<TextView>(R.id.snackbar_text))
+        tv?.textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+        snackbar.setBackgroundTint(getColor(R.color.white))
+        snackbar.setTextColor(getColor(R.color.black))
+        snackbar.setActionTextColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.blue_4079FE
+            )
+        )
+        snackbar.view.layoutParams = layoutParams
+        snackbar.view.setPadding(0, 10, 0, 0)
+        snackbar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_FADE
+        snackbar.show()
+    }
 
 }
