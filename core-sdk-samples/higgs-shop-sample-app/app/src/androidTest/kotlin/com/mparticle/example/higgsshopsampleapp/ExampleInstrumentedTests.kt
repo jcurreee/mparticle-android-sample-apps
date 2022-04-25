@@ -11,19 +11,24 @@ import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.filters.LargeTest
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
+import com.mparticle.api.MParticle
 import com.mparticle.example.higgsshopsampleapp.activities.LandingActivity
 import com.mparticle.example.higgsshopsampleapp.activities.MainActivity
-import com.mparticle.example.higgsshopsampleapp.repositories.ProductsRepository
-import org.junit.Assert.*
+import com.mparticle.internal.Logger
+import com.mparticle.messages.events.MPEventMessage
+import com.mparticle.messages.events.PushRegistrationMessage
+import com.mparticle.testing.BaseTest
+import com.mparticle.testing.testserver.EndpointType
+import com.mparticle.testing.testserver.Server
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.io.InputStream
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 @LargeTest
-class ExampleInstrumentedTests {
+class ExampleInstrumentedTests: BaseTest(true) {
 
     val intent = Intent(ApplicationProvider.getApplicationContext(), MainActivity::class.java)
 
@@ -45,22 +50,29 @@ class ExampleInstrumentedTests {
     }
 
     @Test
-    fun testClickLandingCTA() {
-        onView(withId(R.id.landing_cta)).perform(click())
-        onView(withId(R.id.tv_shop_header)).check(matches(withText(R.string.shop_title)))
-    }
-
-    @Test
-    fun testProductJsonFileExists() {
-        val file: InputStream =
-            InstrumentationRegistry.getInstrumentation().targetContext.assets.open("products.json")
-        assertNotNull(file)
-    }
-
-    @Test
-    fun testProductCount() {
-        val repository = ProductsRepository()
-        val products = repository.getProducts(InstrumentationRegistry.getInstrumentation().targetContext)
-        assertEquals(products.size, 13)
+    fun testLaunchEventLoggedToMParticle() {
+        Server
+            .endpoint(EndpointType.Events)
+            .assertWillReceive { request ->
+                request.body.messages
+                    .map {
+                        when (it) {
+                            is PushRegistrationMessage -> PushRegistrationMessage.serializer()
+                        }
+                        it
+                    }
+                    .filterIsInstance<MPEventMessage>()
+                    .any { event ->
+                        event.name == "Landing Button Click"
+                    }
+            }
+            .after {
+                onView(withId(R.id.landing_cta)).perform(click())
+                MParticle.getInstance()?.upload()
+            }
+            .blockUntilFinished()
+        Server.requests.forEach {
+            Logger.warning("Request: \n${it.request.body.toString()}")
+        }
     }
 }

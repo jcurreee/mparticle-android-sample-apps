@@ -9,10 +9,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.mparticle.MPEvent
 import com.mparticle.MParticle
+import com.mparticle.MParticleOptions
 import com.mparticle.example.higgsshopsampleapp.BuildConfig
 import com.mparticle.example.higgsshopsampleapp.R
 import com.mparticle.example.higgsshopsampleapp.utils.Constants
@@ -41,6 +43,13 @@ class LandingActivity : AppCompatActivity() {
             btnCTA.alpha = 0.3F
             showBlankAPIKeyAlert()
         }
+//        findViewById<AppCompatButton>(R.id.logEvent).setOnClickListener {
+//            val event = MPEvent.Builder("Launch Event")
+//                .customAttributes(mapOf("initialized" to true.toString()))
+//                .build()
+//            MParticle.getInstance()!!.logEvent(event)
+//            MParticle.getInstance()!!.upload()
+//        }
     }
 
     fun hasApiKey(): Boolean {
@@ -77,4 +86,6 @@ class LandingActivity : AppCompatActivity() {
         snackbar.animationMode = BaseTransientBottomBar.ANIMATION_MODE_FADE
         snackbar.show()
     }
+
+
 }

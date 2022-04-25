@@ -17,9 +17,9 @@ android {
         targetSdk = 31
         versionCode = buildVersionCode()
         versionName = "0.11.0-SNAPSHOT"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_KEY", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_KEY")}\"")
-        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_SECRET", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_SECRET")}\"")
+        testInstrumentationRunner = "com.mparticle.example.higgsshopsampleapp.CustomTestRunner"
+        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_KEY", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_KEY") ?: "key"}\"")
+        buildConfigField("String", "HIGGS_SHOP_SAMPLE_APP_SECRET", "\"${System.getenv("HIGGS_SHOP_SAMPLE_APP_SECRET") ?: "secret"}\"")
     }
     buildFeatures {
         dataBinding = true
@@ -49,7 +49,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1")
     implementation("com.google.android.material:material:1.5.0")
-    implementation("com.mparticle:android-core:5.35.3")
+    implementation("com.mparticle:android-core:5.38.0-SNAPSHOT")
 
     implementation("androidx.navigation:navigation-fragment:2.3.5")
     implementation("androidx.navigation:navigation-ui:2.3.5")
@@ -76,6 +76,11 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.3.5")
     implementation("androidx.navigation:navigation-ui-ktx:2.3.5")
 
+    implementation("com.mparticle:models:0.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2")
+
+
     val roomVersion = "2.4.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
@@ -89,6 +94,8 @@ dependencies {
     testImplementation("androidx.room:room-testing:$roomVersion")
 
     testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation("com.mparticle:testing:0.2")
     androidTestImplementation("androidx.test:core:1.4.0")
     androidTestImplementation("androidx.test:core-ktx:1.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
